@@ -1,0 +1,13 @@
+.book-page {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+
+  .book-hero {
+    font-family: "Imperial Script", cursive;
+    font-size: 28px;
+  }
+}
