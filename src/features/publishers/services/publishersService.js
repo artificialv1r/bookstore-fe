@@ -1,5 +1,6 @@
 import Api from "../../../core/services/api";
 
-export const getPublishers = () => {
-  return Api.get("/api/publishers");
-};
+export async function getPublishers() {
+  const response = await Api.get("/api/publishers");
+  return response.data;
+}

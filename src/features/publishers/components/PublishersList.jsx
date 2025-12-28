@@ -13,7 +13,7 @@ export default function PublishersList() {
       try {
         setLoading(true);
         const response = await getPublishers();
-        setPublishers(response.data);
+        setPublishers(response);
       } catch (err) {
         setError("Failed to load publishers");
         console.error(err);
