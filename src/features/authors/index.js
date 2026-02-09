@@ -1,0 +1,1 @@
+export { default as AuthorsList } from "./components/AuthorsList";

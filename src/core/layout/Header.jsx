@@ -10,6 +10,7 @@ export default function Header() {
         </div>
         <nav className="nav">
           <Link to="/publishers">Publishers</Link>
+          <Link to="/authors">Authors</Link>
           <Link to="/books">Books</Link>
           <Link to="/books/new">Create book</Link>
         </nav>

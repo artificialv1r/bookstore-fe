@@ -5,6 +5,7 @@ import "./core/global.scss";
 import "./core/layout.scss";
 import { PublishersList } from "./features/publishers";
 import { BooksList, BooksForm } from "./features/books";
+import AuthorsList from "./features/authors/components/AuthorsList";
 export default function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="books" element={<BooksList />} />
           <Route path="books/new" element={<BooksForm />} />
           <Route path="books/edit/:id" element={<BooksForm />} />
+          <Route path="authors" element={<AuthorsList />} />
         </Routes>
         <Footer />
       </div>
