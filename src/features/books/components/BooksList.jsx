@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { deleteBook, getBooks } from "../services/booksService";
 import "../books.scss";
 import { useNavigate } from "react-router-dom";
-import {fetchSortedBooks} from "../services/booksService";
+import {fetchSortedBooks, fetchFilteredAndSortedBooks} from "../services/booksService";
+import { getAllAuthors } from "../../authors/services/authorsService";
+
 
 export default function BooksList() {
   const [books, setBooks] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,16 +18,40 @@ export default function BooksList() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
-  const navigate = useNavigate();
+  const [filters, setFilters] = useState({
+    title: "",
+    publishedFrom: "",
+    publishedTo: "",
+    authorId: "",
+    author: "",
+    authorBirthFrom: "",
+    authorBirthTo: ""
+  });
 
-  async function loadPublisherPage(page, sortBy ) {
+  const navigate = useNavigate();
+  async function loadAuthors() {
+    try {
+      const data = await getAllAuthors();
+      setAuthors(data);
+    } catch {
+      setError("Failed to load authors.");
+    }
+  }
+
+  async function loadBooks(page, sortBy, filters) {
     try {
       setLoading(true);
-      const data = await fetchSortedBooks(page + 1, sortBy);
+      const data = await fetchFilteredAndSortedBooks(
+          page + 1,
+          filters,
+          sortBy
+      );
+
       setBooks(data.items);
       setTotalItems(data.count);
       setHasNextPage(data.hasNextPage);
       setHasPreviousPage(data.hasPreviousPage);
+
     } catch (error) {
       setError("Failed to fetch books");
     } finally {
@@ -32,12 +59,17 @@ export default function BooksList() {
     }
   }
 
-  useEffect(() => {
-    loadPublisherPage(page, sortBy);
-  }, [page, sortBy]);
-
   const pageSize = 5;
   const totalPages = Math.ceil(totalItems / pageSize);
+
+  useEffect(() => {
+    loadAuthors();
+  }, []);
+
+
+  useEffect(() => {
+    loadBooks(page, sortBy, filters);
+  }, [page, sortBy]);
 
   const handleNextPage = () => {
     if (hasNextPage) {
@@ -72,7 +104,7 @@ export default function BooksList() {
   async function handleDelete(id) {
     try {
       await deleteBook(id);
-      await fetchSortedBooks(page, sortBy);
+      loadBooks(page, sortBy, filters);
     } catch (error) {
       setError("Failed to delete a book.");
     }
@@ -82,10 +114,136 @@ export default function BooksList() {
     navigate(`/books/edit/${id}`);
   }
 
+  function handleSearch() {
+    setPage(0);
+    loadBooks(0, sortBy, filters);
+  }
+
+  function handleReset() {
+    const emptyFilters = {
+      title: "",
+      publishedFrom: "",
+      publishedTo: "",
+      authorId: "",
+      author: "",
+      authorBirthFrom: "",
+      authorBirthTo: ""
+    };
+    setFilters(emptyFilters);
+    setPage(0);
+    loadBooks(0, sortBy, emptyFilters);
+  }
+
   return (
     <div className="book-page">
       <div className="book-hero">
         <h1>Our Books</h1>
+      </div>
+
+      {/* FILTER SECTION */}
+      <div className="books-filters">
+        <div className="filter-item">
+        <label>Title:</label>
+        <input
+            type="text"
+            placeholder="Title"
+            value={filters.title}
+            onChange={(e) =>
+                setFilters({ ...filters, title: e.target.value })
+            }
+        />
+        </div>
+
+        <div className="filter-item">
+        <label>Published From:</label>
+        <input
+            type="date"
+            value={filters.publishedFrom}
+            onChange={(e) =>
+                setFilters({ ...filters, publishedFrom: e.target.value })
+            }
+        />
+        </div>
+
+        <div className="filter-item">
+          <label>Published to:</label>
+        <input
+            type="date"
+            value={filters.publishedTo}
+            onChange={(e) =>
+                setFilters({ ...filters, publishedTo: e.target.value })
+            }
+        />
+        </div>
+
+        <div className="filter-item">
+          <label>Author Name:</label>
+        <input
+            type="text"
+            placeholder="Author name"
+            value={filters.author}
+            onChange={(e) =>
+                setFilters({ ...filters, author: e.target.value })
+            }
+        />
+        </div>
+
+        <div className="filter-item">
+          <label>Author:</label>
+        <input
+            type="text"
+            placeholder="Author name"
+            value={filters.author}
+            onChange={(e) =>
+                setFilters({ ...filters, author: e.target.value })
+            }
+        />
+        </div>
+
+        <div className="filter-item">
+          <label>Author:</label>
+          <select
+              value={filters.authorId || ""}
+              onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    authorId: e.target.value ? Number(e.target.value) : ""
+                  })
+              }
+          >
+            <option value="">All Authors</option>
+            {authors.map(author => (
+                <option key={author.id} value={author.id}>
+                  {author.fullName}
+                </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-item">
+          <label>Author Birth From:</label>
+          <input
+              type="date"
+              value={filters.authorBirthFrom}
+              onChange={(e) =>
+                  setFilters({ ...filters, authorBirthFrom: e.target.value })
+              }
+          />
+        </div>
+
+        <div className="filter-item">
+          <label>Author Birth To:</label>
+          <input
+              type="date"
+              value={filters.authorBirthTo}
+              onChange={(e) =>
+                  setFilters({ ...filters, authorBirthTo: e.target.value })
+              }
+          />
+        </div>
+
+        <button id="searchBtn" onClick={handleSearch}>Search</button>
+        <button id="resetBtn" onClick={handleReset}>Reset</button>
       </div>
 
       {/* Sorting dropdown */}
@@ -149,6 +307,21 @@ export default function BooksList() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* PAGINATION */}
+      <div className="pagination">
+        <button disabled={!hasPreviousPage} onClick={() => setPage(page - 1)}>
+          Previous
+        </button>
+
+        <span>
+          Page {page + 1} of {totalPages}
+        </span>
+
+        <button disabled={!hasNextPage} onClick={() => setPage(page + 1)}>
+          Next
+        </button>
       </div>
     </div>
   );

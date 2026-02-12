@@ -33,3 +33,34 @@ export async function fetchSortedBooks(page, sortBy) {
     throw error;
   }
 }
+
+export async function fetchFilteredAndSortedBooks(page, filters, sortBy) {
+  try {
+    const params = new URLSearchParams();
+
+    params.append("page", page);
+    params.append("sortType", sortBy);
+
+    Object.keys(filters).forEach(key => {
+      const value = filters[key];
+
+      if (value !== null && value !== "") {
+        if (key.toLowerCase().includes("from") || key.toLowerCase().includes("to")) {
+          params.append(key, new Date(value).toISOString());
+        } else {
+          params.append(key, value);
+        }
+      }
+    });
+
+    const response = await Api.get(`/api/books/filter?${params.toString()}`);
+    return response.data;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
