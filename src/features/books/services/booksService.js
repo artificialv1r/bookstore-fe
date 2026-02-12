@@ -24,3 +24,12 @@ export async function deleteBook(id) {
   const response = await Api.delete(`/api/books/${id}`);
   return response.data;
 }
+
+export async function fetchSortedBooks(page, sortBy) {
+  try {
+    const response = await Api.get(`/api/books/sorting?page=${page}&sortType=${sortBy}`);
+    return response.data;
+  }catch (error) {
+    throw error;
+  }
+}

@@ -2,28 +2,54 @@ import React, { useState, useEffect } from "react";
 import { deleteBook, getBooks } from "../services/booksService";
 import "../books.scss";
 import { useNavigate } from "react-router-dom";
+import {fetchSortedBooks} from "../services/booksService";
 
 export default function BooksList() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [page, setPage] = useState(0);
+  const [sortBy, setSortBy] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
+
   const navigate = useNavigate();
 
-  async function loadBooks() {
+  async function loadPublisherPage(page, sortBy ) {
     try {
       setLoading(true);
-      const data = await getBooks();
-      setBooks(data);
+      const data = await fetchSortedBooks(page + 1, sortBy);
+      setBooks(data.items);
+      setTotalItems(data.count);
+      setHasNextPage(data.hasNextPage);
+      setHasPreviousPage(data.hasPreviousPage);
     } catch (error) {
-      setError("Failed to load books");
+      setError("Failed to fetch books");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadBooks();
-  }, []);
+    loadPublisherPage(page, sortBy);
+  }, [page, sortBy]);
+
+  const pageSize = 5;
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (hasPreviousPage) {
+      setPage(prevPage => prevPage - 1);
+    }
+  };
 
   if (loading) {
     return <div className="books-list">Loading books...</div>;
@@ -46,7 +72,7 @@ export default function BooksList() {
   async function handleDelete(id) {
     try {
       await deleteBook(id);
-      loadBooks();
+      await fetchSortedBooks(page, sortBy);
     } catch (error) {
       setError("Failed to delete a book.");
     }
@@ -60,6 +86,26 @@ export default function BooksList() {
     <div className="book-page">
       <div className="book-hero">
         <h1>Our Books</h1>
+      </div>
+
+      {/* Sorting dropdown */}
+      <div className="books-controls">
+        <label htmlFor="sort">Sort by: </label>
+        <select
+            id="sort"
+            value={sortBy}
+            onChange={(e) => {
+              setPage(0);
+              setSortBy(Number(e.target.value));
+            }}
+        >
+          <option value={0}>Title (A-Z)</option>
+          <option value={1}>Title (Z-A)</option>
+          <option value={2}>Date (A-Z)</option>
+          <option value={3}>Date (Z-A)</option>
+          <option value={4}>Author (A-Z)</option>
+          <option value={5}>Author (Z-A)</option>
+        </select>
       </div>
 
       <div className="books-table">
@@ -76,8 +122,8 @@ export default function BooksList() {
             {books.map((book) => (
               <tr key={book.id}>
                 <td id="book-name">{book.title}</td>
-                <td>{book.author.fullName}</td>
-                <td>{book.publisher.name}</td>
+                <td>{book.author}</td>
+                <td>{book.publisher}</td>
                 <td>{formatDate(book.publishedDate)}</td>
                 <td>
                   <button
