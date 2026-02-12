@@ -7,7 +7,7 @@ export async function getAllAuthors() {
 
 export async function fetchAuthorPage(page) {
     try {
-        const response = await Api.get('/api/Authors/paging?page=' + page); // Dodato /api/
+        const response = await Api.get('/api/Authors/paging?page=' + page);
         return response.data;
     } catch (error) {
         throw error;

@@ -14,16 +14,12 @@ export default function AuthorsList() {
     async function loadAuthorPage(page){
         try {
             setLoading(true);
-            console.log('Fetching page:', page + 1); // Debug log
             const data = await fetchAuthorPage(page + 1);
-            console.log('Received data:', data.items); // Debug log
             setAuthors(data.items);
             setTotalItems(data.count);
             setHasNextPage(data.hasNextPage);
             setHasPreviousPage(data.hasPreviousPage)
         } catch (error) {
-            console.error('Error fetching authors:', error); // Detaljnija greška
-            console.error('Error response:', error.response);
             setError("Failed to fetch authors");
         } finally {
             setLoading(false);

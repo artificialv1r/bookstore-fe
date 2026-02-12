@@ -55,4 +55,20 @@
       }
     }
   }
+
+  .publishers-controls{
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+
+    select{
+      padding: 5px;
+      border: none;
+      border-radius: 5px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 4px;
+    }
+  }
 }
