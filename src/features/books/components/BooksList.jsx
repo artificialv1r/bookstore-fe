@@ -4,9 +4,11 @@ import "../books.scss";
 import { useNavigate } from "react-router-dom";
 import {fetchSortedBooks, fetchFilteredAndSortedBooks} from "../services/booksService";
 import { getAllAuthors } from "../../authors/services/authorsService";
-
+import { useAuth} from "../../../context/AuthContext";
 
 export default function BooksList() {
+  const {isAuthenticated, role} = useAuth();
+
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +113,7 @@ export default function BooksList() {
   }
 
   async function handleEdit(id) {
-    navigate(`/books/edit/${id}`);
+    navigate(`/books/${id}`);
   }
 
   function handleSearch() {
@@ -283,26 +285,33 @@ export default function BooksList() {
                 <td>{book.author}</td>
                 <td>{book.publisher}</td>
                 <td>{formatDate(book.publishedDate)}</td>
-                <td>
+                {isAuthenticated && (role === "Editor") && (
+                    <>
+                    <td>
+                      <button
+                          id="editBtn"
+                          onClick={() => {
+                            handleEdit(book.id);
+                          }}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  <td>
                   <button
-                    id="editBtn"
-                    onClick={() => {
-                      handleEdit(book.id);
-                    }}
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td>
-                  <button
-                    id="deleteBtn"
-                    onClick={() => {
-                      handleDelete(book.id);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
+                  id="deleteBtn"
+                  onClick={() => {
+                  handleDelete(book.id);
+                }}
+              >
+                Delete
+              </button>
+              </td>
+
+                    </>
+                )}
+
+
               </tr>
             ))}
           </tbody>

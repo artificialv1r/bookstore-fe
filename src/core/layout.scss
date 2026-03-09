@@ -29,6 +29,17 @@
   display: flex;
   gap: 2rem;
   padding: 10px 0px;
+
+  #signout-btn{
+    border: none;
+    background-color: transparent;
+    color: #8d0b41;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: "Quintessential", serif;
+    font-size: 20px;
+    cursor: pointer;
+  }
 }
 
 .nav a {

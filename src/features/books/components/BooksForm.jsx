@@ -42,26 +42,19 @@ export default function BooksForm() {
 
   async function handleCreate(formData) {
     try {
-      let bookPayload;
+      const bookPayload = {
+        id: Number(id),
+        title: formData.title,
+        pageCount: formData.pageCount,
+        isbn: formData.isbn,
+        authorId: formData.authorId,
+        publisherId: formData.publisherId,
+        publishedDate: new Date(formData.publishedDate).toISOString()
+      };
+
       if (isEditMode) {
-        const existingBook = await getBookById(id);
-
-        bookPayload = {
-          ...existingBook,
-          ...formData,
-          publishedDate: new Date(formData.publishedDate).toISOString(),
-          isbn: formData.isbn || existingBook.isbn,
-          author: existingBook.author,
-          publisher: existingBook.publisher,
-        };
-
         await updateBook(id, bookPayload);
       } else {
-        bookPayload = {
-          ...formData,
-          publishedDate: new Date(formData.publishedDate).toISOString(),
-          isbn: formData.isbn || "000-0000000000",
-        };
         await createBook(bookPayload);
       }
 
