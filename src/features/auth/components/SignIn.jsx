@@ -30,6 +30,10 @@ const SignIn = () => {
         }
     };
 
+    const handleGoogleLogin = () => {
+        window.location.href = "http://localhost:5234/api/Auth/google-login";
+    };
+
     return (
         <div className="auth-page">
             <div className="auth-hero">
@@ -47,6 +51,9 @@ const SignIn = () => {
                 <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <button className="btn" type="submit">Sign in</button>
+                <button onClick={handleGoogleLogin}>
+                    Sign in with Google
+                </button>
             </form>
             </div>
         </div>

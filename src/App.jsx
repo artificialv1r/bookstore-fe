@@ -9,6 +9,7 @@ import AuthorsList from "./features/authors/components/AuthorsList";
 import { useAuth} from "./context/AuthContext";
 import RegisterForm from "./features/auth/components/RegisterForm";
 import SignIn from "./features/auth/components/SignIn";
+import GoogleCallback from "./features/auth/components/GoogleCallback";
 
 export default function App() {
   const { isAuthenticated, role } = useAuth();
@@ -34,6 +35,7 @@ export default function App() {
 
               <Route path="/signin" element={isAuthenticated ? <Navigate replace to="/" /> : <SignIn />}/>
               <Route path="/register" element={isAuthenticated ? <Navigate replace to="/" /> : <RegisterForm />} />
+              <Route path="/google-callback" element={<GoogleCallback />} />
             </Routes>
             <Footer />
           </div>
