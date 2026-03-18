@@ -16,6 +16,7 @@ export default function Header() {
           <Link to="/publishers">Publishers</Link>
           <Link to="/authors">Authors</Link>
           <Link to="/books">Books</Link>
+          <Link to="/volumes">Volumes</Link>
           <Link to="/books/add">Create book</Link>
             {!isAuthenticated ? (
                 <>

@@ -10,6 +10,9 @@ import { useAuth} from "./context/AuthContext";
 import RegisterForm from "./features/auth/components/RegisterForm";
 import SignIn from "./features/auth/components/SignIn";
 import GoogleCallback from "./features/auth/components/GoogleCallback";
+import VolumesList from "./features/comics/components/VolumesList";
+import VolumeIssues from "./features/comics/components/VolumeIssues";
+import IssueForm from "./features/comics/components/IssueForm";
 
 export default function App() {
   const { isAuthenticated, role } = useAuth();
@@ -24,6 +27,9 @@ export default function App() {
               <Route path="publishers" element={<PublishersList />} />
               <Route path="books" element={<BooksList />} />
               <Route path="authors" element={<AuthorsList />} />
+              <Route path="volumes" element={<VolumesList />} />
+              <Route path="/volumes/:volumeId/issues" element={<VolumeIssues />} />
+              <Route path="/issues/save/:issueId" element={<IssueForm />} />
 
               {isAuthenticated && (
                     <Route path="books/add" element={<BooksForm />} />
